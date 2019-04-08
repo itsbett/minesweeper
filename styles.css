@@ -1,0 +1,15 @@
+body, html {
+	background-color: black;
+	color: white;
+}
+#container {
+	display: inline;
+}
+
+.left {
+	display: inline-block;
+}
+
+.red {
+	color: red;
+}
