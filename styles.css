@@ -6,6 +6,11 @@ body, html {
 	display: inline;
 }
 
+#canvas {
+	text: red;
+	font-size: 30px;
+}
+
 .left {
 	display: inline-block;
 }
