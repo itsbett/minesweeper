@@ -1,8 +1,8 @@
 body, html {
-	background-color: black;
+	background-color: rgb(143, 228, 73);
 	color: white;
 }
-#container {
+#container1 {
 	display: inline;
 }
 
@@ -17,4 +17,77 @@ body, html {
 
 .red {
 	color: red;
+}
+.tiles div {
+	display: block;
+	float: left;
+
+	width: 32px;
+	height: 32px;
+	background: red;
+}
+
+.bottom div {
+	float: bottom;
+	width: 32px;
+	height: 32px;
+	background: green;
+}
+
+#canvascontainer {
+	width: 32px;
+	height: 32px;
+
+	background-color: purple;
+}
+
+#end {
+	float: left;
+}
+
+#center {
+	position: relative;
+	z-index: -1;
+}
+#topleft {
+	content: url("tiles/topleft.png");
+}
+#botleft {
+	content: url("tiles/bottomleft.png");
+}
+#topright {
+	content: url("tiles/topright.png");
+}
+#botright {
+	content: url("tiles/bottomright.png");
+}
+#left {
+	content: url("tiles/left.png");
+}
+#right {
+	content: url("tiles/right.png");
+}
+#top {
+	content: url("tiles/top.png");
+}
+#bottom {
+	content: url("tiles/bottom.png");
+}
+#rockleft {
+	content: url("tiles/rock_topleft.png");
+}
+#rockright {
+	content: url("tiles/rock_topright.png");
+}
+#rockmid {
+	content: url("tiles/rock_mid.png");
+}
+#rockbotleft {
+	content: url("tiles/rock_bottomleft.png");
+}
+#rockbotright {
+	content: url("tiles/rock_bottomright.png");
+}
+#rockbotmid {
+	content: url("tiles/rock_bottommid.png");
 }

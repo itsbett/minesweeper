@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<style>
+	body, html {
+		background-color: black;
+		color: white;
+	}
+
+	.tiles div {
+		display: block;
+		float: left;
+
+		width: 32px;
+		height: 32px;
+		background: red;
+	}
+
+	.bottom div {
+		float: bottom;
+		width: 32px;
+		height: 32px;
+		background: green;
+	}
+
+	#canvascontainer {
+		width: 32px;
+		height: 32px;
+
+		background-color: purple;
+	}
+
+	#end {
+		float: left;
+	}
+
+	#center {
+		position: relative;
+		z-index: -1;
+	}
+	#topleft {
+		content: url("tiles/topleft.png");
+	}
+	#botleft {
+		content: url("tiles/bottomleft.png");
+	}
+	#topright {
+		content: url("tiles/topright.png");
+	}
+	#botright {
+		content: url("tiles/bottomright.png");
+	}
+	#left {
+		content: url("tiles/left.png");
+	}
+	#right {
+		content: url("tiles/right.png");
+	}
+	#top {
+		content: url("tiles/top.png");
+	}
+	#bottom {
+		content: url("tiles/bottom.png");
+	}
+</style>
+<head>
+	<title>Testing DIV elements</title>
+</head>
+<body>
+<div class="tiles" id="container"></div>
+
+</body>
+<script>
+	const height = 16
+	const width = 16
+	const container = document.getElementById("container")
+
+	for (let i = 0; i < height; i++) {
+		let div = document.createElement("div")
+		for (let j = 0; j < width; j++) {
+			if (i === 1 && j === 1) {
+				let div2 = document.createElement("div")
+				canvas = document.createElement("canvas")
+				canvas.height = 32 * height - 64
+				canvas.width = 32 * width - 64
+				canvas.style.backgroundColor = 'white'
+				div2.appendChild(canvas)
+				div.appendChild(div2)
+			} else {
+				let div2 = document.createElement("div")
+				tilepos = getTile(i, j)
+				div2.setAttribute("id", tilepos)
+				div.appendChild(div2)
+			}
+		}
+		container.appendChild(div)
+	}
+	function getTile (i, j) {
+		if (i === 1 && j === 1) {
+			return 'canvascontainer'
+		}
+	if (i === 0) { // are we on the left side?
+		if (j === 0) {
+		return 'topleft' // is this the top left tile?
+	}
+	if (j === width - 1) { // is this bottom left tile?
+		return 'botleft'
+	}
+	return 'left' // otherwise it's a left tile
+	}
+	if (j === 0) { // are we on top side?
+	  if (i === height - 1) { // is this top right tile?
+		return 'topright'
+	  }
+	  return 'top'
+	}
+	if (j === width - 1) { // is this right side?
+	  if (i === height - 1) { // is this bottom right tile?
+		return 'botright'
+	  }
+	  return 'bottom'
+	}
+	if (i === width - 1) {
+	  return 'right'
+	}
+	return 'center'
+ }
+</script>
+</html>
