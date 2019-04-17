@@ -3,6 +3,10 @@ let mousePosition = null
 let mineSweeper = 'haha'
 let grass = new Image()
 grass.src = 'tiles/grass_center.png'
+let flag = new Image()
+flag.src = 'tiles/flag.png'
+let fail = new Image()
+fail.src = 'tiles/fail.png'
 
 class Minesweeper {
   constructor (row, col, mines) {
@@ -14,14 +18,39 @@ class Minesweeper {
     this.canvas.addEventListener('mousemove', moveMouse, false)
     this.mineList = randomMines(mines, row, col)
     this.board = new Board(row, col, () => this.mineList.pop() === 1)
-    this.startGame()
+    this.playGame = true
+    this.escavationsToWin = row * col - mines
+    this.escavations = 0
   }
   startGame () {
-    // this.draw()
+    this.playGame = true
   }
   endGame () {
-    console.log('you lose, fuckboi')
+    this.playGame = false
+    this.blowupMines()
   }
+  winGame () {
+    console.log('You win!')
+  }
+
+  blowupMines () {
+    let board = mineSweeper.board.field
+    console.log('-----------------------------')
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        if (board[i][j].isMine) {
+          board[i][j].click()
+          console.log(`(${board[i][j].x}, ${board[i][j].y})`)
+        } else if (board[i][j].hasFlag) {
+          console.log('fuck yeah')
+          board[i][j].hasFlag = false
+          board[i][j].tile = fail
+          board[i][j].draw()
+        }
+      }
+    }
+  }
+
   buildCanvas () {
     for (let i = 0; i < this.row + 2; i++) {
       let div = document.createElement('div')
@@ -123,42 +152,66 @@ class Node {
     this.y = y
     this.escavated = false
     this.isMine = isMine
-    this.tile = tile
+    this.tile = grass
     this.surroundingMines = null
     this.selected = false
+    this.hasFlag = false
   }
 
   click () {
+    if (this.hasFlag) {
+      this.hasFlag = false
+      this.draw()
+    }
     if (!this.escavated) {
       mineSweeper.context.font = '30px Arial'
       this.escavated = true
-      if (this.isMine) {
-        this.surroundingMines = this.getSurroundingMines() // delete this later
+      if (this.isMine && mineSweeper.playGame) {
         mineSweeper.endGame()
       } else {
+        if (!this.isMine) {
+          mineSweeper.escavations++
+          console.log(mineSweeper.escavations)
+        }
         this.surroundingMines = this.getSurroundingMines()
         if (this.surroundingMines[0] === 0) {
           this.surroundingMines[1].forEach((e) => e.click())
         }
       }
+      if (mineSweeper.escavations === mineSweeper.escavationsToWin) {
+        mineSweeper.winGame()
+      }
       this.draw()
     }
   }
-
+  plantFlag () {
+    if (this.hasFlag) {
+      this.hasFlag = false
+      this.tile = grass
+      this.draw()
+    } else {
+      this.hasFlag = true
+      this.tile = flag
+      this.draw()
+    }
+  }
   draw () {
+    if (this.hasFlag) {
+      this.tile = flag
+    }
+    mineSweeper.context.drawImage(this.tile, this.x * 32, this.y * 32, 32, 32)
     if (this.selected) {
       mineSweeper.context.strokeRect(this.x * 32 + 1, this.y * 32 + 1, 29, 29)
     } else {
       mineSweeper.context.clearRect(this.x * 32, this.y * 32, 32, 32)
-      mineSweeper.context.drawImage(grass, this.x * 32, this.y * 32, 32, 32)
+      mineSweeper.context.drawImage(this.tile, this.x * 32, this.y * 32, 32, 32)
     }
-    if (this.escavated) {
+    if (this.isMine && this.escavated) {
+      mineSweeper.context.fillStyle = '#FF0000'
+      mineSweeper.context.fillRect(this.x * 32, this.y * 32, 32, 32)
+    } else if (this.escavated) {
       mineSweeper.context.fillStyle = '#000000'
       mineSweeper.context.fillText(this.surroundingMines[0], this.x * 32 + 32 / 4, this.y * 32 + 32)
-      if (this.isMine) {
-        mineSweeper.context.fillStyle = '#FF0000'
-        mineSweeper.context.fillRect(this.x * 32, this.y * 32, 32, 32)
-      }
     }
   }
 
@@ -261,32 +314,63 @@ function getMousePos (canvas, event) {
 }
 
 function moveMouse (event) {
-  let pos = getMousePos(mineSweeper.canvas, event)
-  if (mousePosition === null) { // has there been a previous mouse position?
-    mousePosition = pos
-  } else if (mousePosition.x !== pos.x || mousePosition.y !== pos.y) { // is the previous mouse position different than the current one?
-    let oldTile = mineSweeper.board.field[mousePosition.x][mousePosition.y]
-    let newTile = mineSweeper.board.field[pos.x][pos.y]
+  if (mineSweeper.playGame) {
+    let pos = getMousePos(mineSweeper.canvas, event)
+    if (mousePosition === null) { // has there been a previous mouse position?
+      mousePosition = pos
+    } else if (mousePosition.x !== pos.x || mousePosition.y !== pos.y) { // is the previous mouse position different than the current one?
+      let oldTile = mineSweeper.board.field[mousePosition.x][mousePosition.y]
+      let newTile = mineSweeper.board.field[pos.x][pos.y]
 
-    oldTile.selected = false
-    newTile.selected = true
+      oldTile.selected = false
+      newTile.selected = true
 
-    oldTile.draw()
-    newTile.draw()
+      oldTile.draw()
+      newTile.draw()
 
-    console.log(newTile.tile)
-    mousePosition = pos
+      mousePosition = pos
+    }
   }
 }
 
 function mouseClick (event) {
-  let pos = getMousePos(mineSweeper.canvas, event)
-  mineSweeper.board.field[pos.x][pos.y].click()
+  let buttonClick = event.button
+  if (mineSweeper.playGame) {
+    let board = mineSweeper.board.field
+    if (buttonClick === 0) {
+      let pos = getMousePos(mineSweeper.canvas, event)
+      if (!board[pos.x][pos.y].hasFlag && !board.escavated) {
+        board[pos.x][pos.y].click()
+      }
+    } else if (buttonClick === 2) {
+      let pos = getMousePos(mineSweeper.canvas, event)
+      if (!board[pos.x][pos.y].escavated) {
+        board[pos.x][pos.y].plantFlag()
+      }
+    }
+  }
 }
 
-window.addEventListener('load', start)
+window.addEventListener('load', createStart)
 
 function start () {
-  mineSweeper = new Minesweeper(15, 15, 45)
+  let width = parseInt(document.getElementById('width').value)
+  let height = parseInt(document.getElementById('height').value)
+  let mines = parseInt(document.getElementById('mines').value)
+  let startForm = document.getElementById('startform')
+  startForm.parentNode.removeChild(startForm)
+  console.log(width, height, mines)
+  mineSweeper = new Minesweeper(width, height, mines)
   mineSweeper.draw()
+}
+
+function createStart () {
+  let startButton = document.createElement('input')
+  startButton.type = 'button'
+  startButton.value = 'Start Minesweeper!'
+  startButton.setAttribute('onclick', 'start()')
+  startButton.setAttribute('id', 'startbutton')
+
+  let startButtonContainer = document.getElementById('startform')
+  startButtonContainer.appendChild(startButton)
 }

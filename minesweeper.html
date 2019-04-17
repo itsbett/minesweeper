@@ -1,9 +1,16 @@
 <!DOCTYPE html> 
 <html>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<body>
+	<body oncontextmenu="return false;">
 		<div id="container1"></div>
 		<div class="tiles" id="container"></div>
 		<script type="text/javascript" src="minesweeper.js"></script>
+		<div id="startform">
+			<form>
+				Width: <input type="text" name="width" value="10" id="width"> 
+				Height: <input type="text" name="height" value="10" id="height">
+				Mines: <input type="text" name="mines" value="20" id="mines"><br>
+			</form>
+		</div>
 	</body>
 </html>

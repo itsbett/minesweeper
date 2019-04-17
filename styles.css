@@ -5,12 +5,22 @@ body, html {
 #container1 {
 	display: inline;
 }
-
+#startform {
+	display: inline-block;
+	background-color: brown;
+	color: black;
+	border-width: 2px;
+	border-radius: 20px;
+	padding: 5px;
+}
 #canvas {
 	text: red;
 	font-size: 30px;
 }
-
+#startbutton {
+	position: relative;
+	left: 39%;
+}
 .left {
 	display: inline-block;
 }
